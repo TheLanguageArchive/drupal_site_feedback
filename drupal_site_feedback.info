@@ -1,0 +1,6 @@
+name = "Drupal Site Feedback"
+description = "Drupal module for allowing you to add a feedback button on your website"
+dependencies[] = webform
+package = Drupal
+core = 7.x
+version = 7.x-0.1-dev

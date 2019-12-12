@@ -1,0 +1,103 @@
+<?php
+module_load_include('inc', 'drupal_site_feedback', 'includes/exceptions');
+
+use DrupalSiteFeedback\ParseForm;
+use DrupalSiteFeedback\Submission;
+use DrupalSiteFeedback\WebformNotFoundException;
+
+function drupal_site_feedback_get_form_api($form_id) {
+
+    module_load_include('inc', 'drupal_site_feedback', 'includes/parse_form');
+
+    try {
+
+        $parser = new ParseForm();
+        $output = [
+
+            'type'    => 'success',
+            'message' => $parser->parse($form_id),
+        ];
+
+    } catch (WebformNotFoundException $e) {
+
+        $output = [
+
+            'type'    => 'error',
+            'message' => 'Could not find webform',
+        ];
+    }
+
+    return drupal_json_output($output);
+}
+
+function drupal_site_feedback_post_form_api($form_id) {
+
+    $error = [
+
+        'type'    => 'error',
+        'message' => 'Could not find webform',
+    ];
+
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        return drupal_json_output($error);
+    }
+
+    global $user;
+    module_load_include('inc', 'drupal_site_feedback', 'includes/submission');
+
+    try {
+
+        $submission = new Submission();
+        $submission->submit($form_id, $user->uid, $_POST['ds_feedback']);
+
+        $output = [
+
+            'type'    => 'success',
+            'message' => 'Submission created',
+        ];
+
+    } catch (WebformNotFoundException $e) {
+        $output = $error;
+    }
+
+    return drupal_json_output($output);
+}
+
+function drupal_site_feedback_menu() {
+
+    $items = [];
+
+    $items['ds_feedback/%'] = [
+
+        'title'           => 'Getting form in json form',
+        'type'            => MENU_CALLBACK,
+        'page callback'   => 'drupal_site_feedback_get_form_api',
+        'page arguments'  => [1],
+        'access callback' => true,
+    ];
+
+    $items['ds_feedback/%/create'] = [
+
+        'title'           => 'Getting form in json form',
+        'type'            => MENU_CALLBACK,
+        'page callback'   => 'drupal_site_feedback_post_form_api',
+        'page arguments'  => [1],
+        'access callback' => true,
+    ];
+
+    return $items;
+}
+
+function drupal_site_feedback_theme() {
+
+    return [
+
+        'drupal_site_feedback_demo' => [
+            'template' => 'theme/drupal-site-feedback-demo',
+        ],
+    ];
+}
+
+function drupal_site_feedback_demo() {
+    return theme('drupal_site_feedback_demo');
+}

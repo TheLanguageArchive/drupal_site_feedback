@@ -1,0 +1,21 @@
+.feedback-container {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+
+    button {
+        float: right;
+    }
+}
+
+.card {
+    width: 300px;
+    margin: 10px;
+    opacity: 0;
+    margin-bottom: -50px;
+}
+
+.full-width {
+    width: 100%;
+}
+

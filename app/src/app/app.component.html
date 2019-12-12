@@ -1,0 +1,40 @@
+<div class="feedback-container" *ngIf="formInput">
+    <mat-card class="card" [@visibilityChanged]="visibility">
+        <mat-card-title>{{ formInput.title }}</mat-card-title>
+        <mat-card-content>
+            <mat-accordion>
+                <mat-expansion-panel #panels [disabled]="isPanelDisabled(group)" [expanded]="isFirst" [formGroup]="formManager.get(group.key)" *ngFor="let group of formInput.items; let idx = index; first as isFirst">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>{{ group.title }}</mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div *ngFor="let item of group.items">
+                        <mat-form-field [ngSwitch]="item.type" class="full-width">
+                            <mat-label>{{ item.label }}</mat-label>
+                            <input matInput *ngSwitchCase="'textfield'" [placeholder]="item.placeholder" [formControlName]="item.key">
+                            <input matInput *ngSwitchCase="'email'" [type]="item.type" [placeholder]="item.placeholder" [formControlName]="item.key">
+                            <textarea matInput cdkTextareaAutosize *ngSwitchCase="'textarea'" [placeholder]="item.placeholder" [formControlName]="item.key"></textarea>
+                        </mat-form-field>
+                    </div>
+                    <mat-action-row *ngIf="!isSubmitting()">
+                        <button mat-button [disabled]="isPreviousStepButtonDisabled(group)" (click)="previousStep(group)">Previous</button>
+                        <button mat-raised-button color="primary" cdkFocusInitial [disabled]="!validate(group.key)" (click)="nextStep(group)" *ngIf="!isLastStep(group)">Next</button>
+                        <button mat-raised-button color="primary" cdkFocusInitial [disabled]="!validate(group.key)" (click)="submit()" *ngIf="isLastStep(group)">Submit</button>
+                    </mat-action-row>
+                    <mat-action-row *ngIf="isProcessing()">
+                        <mat-spinner diameter="20"></mat-spinner>
+                    </mat-action-row>
+                    <mat-action-row *ngIf="isSuccess()">
+                        Feedback was successfully submitted
+                    </mat-action-row>
+                    <mat-action-row *ngIf="isError()">
+                        Feedback could not be submitted
+                    </mat-action-row>
+                </mat-expansion-panel>
+            </mat-accordion>
+        </mat-card-content>
+    </mat-card>
+    <button mat-fab (click)="toggleForm()">
+        <mat-icon *ngIf="!visibility">feedback</mat-icon>
+        <mat-icon *ngIf="visibility">close</mat-icon>
+    </button>
+</div>
