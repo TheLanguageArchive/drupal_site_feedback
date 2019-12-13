@@ -23,18 +23,22 @@ export interface DrupalSiteFeedbackSuccessInterface {
     };
 }
 
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable()
 export class DrupalApiService {
 
+    url: string;
+
     constructor(private http: HttpClient) {
+    }
+
+    setUrl(url: string) {
+        this.url = url;
     }
 
     getForm(): Observable<FormInputGroup> {
 
         return this.http
-            .get('http://localhost/flat/ds_feedback/295')
+            .get(this.url)
             .pipe(
                 map(data => this.serialize(data as DrupalSiteFeedbackSuccessInterface | DrupalSiteFeedbackErrorInterface))
             );
@@ -43,7 +47,7 @@ export class DrupalApiService {
     submitForm(data: {}) {
 
         return this.http
-            .post('http://localhost/flat/ds_feedback/295/create', {ds_feedback: data});
+            .post(`${this.url}/create`, {ds_feedback: data});
     }
 
     serialize(data: DrupalSiteFeedbackSuccessInterface | DrupalSiteFeedbackErrorInterface)

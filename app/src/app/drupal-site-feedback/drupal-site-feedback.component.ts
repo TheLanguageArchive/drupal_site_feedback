@@ -1,25 +1,30 @@
-import { Component, ViewChildren, QueryList } from '@angular/core';
-import { FormInputGroup } from './form-input';
-
-import { DrupalApiService } from './api/drupal.api.service';
+import { Component, ViewChildren, QueryList, OnInit, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { FormService } from './services/form.service';
 import { MatExpansionPanel } from '@angular/material';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 
+import { FormInputGroup } from '../form-input';
+import { DrupalApiService } from '../services/drupal-api.service';
+import { FormService } from '../services/form.service';
+
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
+  templateUrl: './drupal-site-feedback.component.html',
+  styleUrls: ['./drupal-site-feedback.component.scss'],
   animations: [
     trigger('visibilityChanged', [
       state('shown', style({opacity: 1, marginBottom: '10px'})),
       state('hidden', style({opacity: 0, marginBottom: '-50px'})),
       transition('* => *', animate('.5s')),
+    ]),
+    trigger('toggler', [
+      transition('hidden <=> shown', [
+        style({transform: 'scale(1.5)', opacity: 0}),
+        animate('.2s 0s ease-out')
+      ])
     ])
   ],
 })
-export class AppComponent {
+export class DrupalSiteFeedbackComponent implements OnInit {
 
   title      = 'Feedback';
   visibility = 'hidden';
@@ -28,6 +33,9 @@ export class AppComponent {
   submitted  = false;
   error      = false;
   success    = false;
+
+  @Input() url: string;
+  @Input() width: number = 300;
 
   @ViewChildren('panels') panels: QueryList<MatExpansionPanel>;
 
@@ -39,6 +47,8 @@ export class AppComponent {
 
   ngOnInit() {
 
+    this.drupalApiService.setUrl(this.url);
+    console.log(this.url);
     this.drupalApiService.getForm()
       .subscribe(
         data => {

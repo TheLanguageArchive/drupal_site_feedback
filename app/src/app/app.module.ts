@@ -1,20 +1,21 @@
-import { NgModule } from '@angular/core';
+import { NgModule, Injector } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { createCustomElement } from '@angular/elements';
 
 import { MatCardModule, MatExpansionModule, MatFormFieldModule } from '@angular/material';
 import { MatInputModule, MatDividerModule, MatButtonModule } from '@angular/material';
 import { MatIconModule, MatListModule, MatProgressSpinnerModule } from '@angular/material';
 
-import { AppComponent } from './app.component';
-import { DrupalApiService } from './api/drupal.api.service';
+import { DrupalSiteFeedbackComponent } from './drupal-site-feedback/drupal-site-feedback.component';
+import { DrupalApiService } from './services/drupal-api.service';
 import { FormService } from './services/form.service';
 
 @NgModule({
   declarations: [
-    AppComponent,
+    DrupalSiteFeedbackComponent,
   ],
   imports: [
     BrowserModule,
@@ -31,7 +32,20 @@ import { FormService } from './services/form.service';
     MatListModule,
     MatProgressSpinnerModule,
   ],
+  entryComponents: [DrupalSiteFeedbackComponent],
   providers: [DrupalApiService, FormService],
-  bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+
+  constructor(private injector: Injector) {
+  }
+
+  ngDoBootstrap() {
+
+    const feedbackElement = createCustomElement(DrupalSiteFeedbackComponent, {
+      injector: this.injector
+    });
+
+    customElements.define('drupal-site-feedback', feedbackElement);
+  }
+}

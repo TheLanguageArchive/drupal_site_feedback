@@ -2,9 +2,7 @@ import { Injectable } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { FormInputGroup, FormInputEmail } from '../form-input';
 
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable()
 export class FormService {
 
     constructor(private fb: FormBuilder) {
