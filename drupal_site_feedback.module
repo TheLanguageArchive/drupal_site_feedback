@@ -85,7 +85,7 @@ function drupal_site_feedback_menu() {
         'access callback' => true,
     ];
 
-    $items['ds_feedback/%/demo'] = [
+    $items['ds_feedback/demo'] = [
 
         'title'           => 'Getting form in json form',
         'type'            => MENU_CALLBACK,
@@ -112,5 +112,7 @@ function drupal_site_feedback_demo() {
     $module_path = drupal_get_path('module', 'drupal_site_feedback');
     drupal_add_js($module_path . '/app/dist/elements/drupal-site-feedback.js', ['scope' => 'footer']);
 
-    return theme('drupal_site_feedback_demo');
+    return theme('drupal_site_feedback_demo', [
+        'url' => url('ds_feedback/' . variable_get('drupal_site_feedback_id')),
+    ]);
 }

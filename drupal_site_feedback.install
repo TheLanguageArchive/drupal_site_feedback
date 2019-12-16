@@ -1,0 +1,107 @@
+<?php
+
+function drupal_site_feedback_install() {
+
+  global $user;
+
+  $node = new stdClass();
+  $node->type = 'webform';
+  $node->title = 'Site Feedback';
+  $node->language = 'en';
+  $node->uid = $user->uid;
+  $node->promote = 0;
+  $node->comment = 0;
+
+  $components = [
+
+    'personal' => [
+
+      'name' => 'Personal',
+      'form_key' => 'personal',
+      'type' => 'fieldset',
+      'required' => 1,
+      'weight' => 0,
+      'pid' => 0,
+    ],
+  ];
+
+  $node->webform = [
+
+    'confirmation' => '',
+    'confirmation_format' => NULL,
+    'redirect_url' => '<confirmation>',
+    'status' => '1',
+    'block' => '0',
+    'teaser' => '0',
+    'allow_draft' => '0',
+    'auto_save' => '0',
+    'submit_notice' => '1',
+    'submit_text' => '',
+    'submit_limit' => '-1', // User can submit more than once.
+    'submit_interval' => '-1',
+    'total_submit_limit' => '-1',
+    'total_submit_interval' => '-1',
+    'record_exists' => TRUE,
+    'roles' => array(
+      0 => '1',
+      1 => '2',
+    ),
+    'emails' => [],
+    'components' => $components,
+  ];
+
+  node_save($node);
+  $node = node_load($node->nid);
+
+  $node->webform['components'][] = [
+
+      'name' => 'Name',
+      'form_key' => 'name',
+      'type' => 'textfield',
+      'required' => 1,
+      'weight' => 1,
+      'pid' => $node->webform['components'][1]['cid'],
+  ];
+
+  $node->webform['components'][] = [
+
+      'name' => 'E-mail',
+      'form_key' => 'e_mail',
+      'type' => 'email',
+      'required' => 1,
+      'weight' => 2,
+      'pid' => $node->webform['components'][1]['cid'],
+  ];
+
+  node_save($node);
+
+  $node = node_load($node->nid);
+
+  $node->webform['components'][] = [
+
+      'name' => 'Feedback',
+      'form_key' => 'feedback',
+      'type' => 'fieldset',
+      'required' => 1,
+      'weight' => 3,
+      'pid' => 0,
+  ];
+
+  node_save($node);
+
+  $node = node_load($node->nid);
+
+  $node->webform['components'][] = [
+
+      'name' => 'Feedback',
+      'form_key' => 'feedback',
+      'type' => 'textarea',
+      'required' => 1,
+      'weight' => 4,
+      'pid' => $node->webform['components'][4]['cid'],
+  ];
+
+  node_save($node);
+
+  variable_set('drupal_site_feedback_id', $node->nid);
+}
