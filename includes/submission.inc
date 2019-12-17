@@ -46,8 +46,8 @@ class Submission
 
         $submission = (object)[
 
-            'nid'         => $form_id,
-            'uid'         => $user->uid,
+            'nid'         => $formId,
+            'uid'         => $userId,
             'sid'         => null,
             'submitted'   => REQUEST_TIME,
             'completed'   => REQUEST_TIME,
@@ -56,6 +56,6 @@ class Submission
             'data'        => $data,
         ];
 
-        $sid = webform_submission_insert($node, $submission);
+        return webform_submission_insert($node, $submission);
     }
 }

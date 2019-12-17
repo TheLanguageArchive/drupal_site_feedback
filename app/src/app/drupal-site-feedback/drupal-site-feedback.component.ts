@@ -48,7 +48,6 @@ export class DrupalSiteFeedbackComponent implements OnInit {
   ngOnInit() {
 
     this.drupalApiService.setUrl(this.url);
-    console.log(this.url);
     this.drupalApiService.getForm()
       .subscribe(
         data => {
@@ -145,7 +144,10 @@ export class DrupalSiteFeedbackComponent implements OnInit {
         data => {
 
           this.success = true;
-          console.log(data);
+
+          setTimeout(_ => {
+            this.resetForm();
+          }, 3000);
         },
 
         error => {
@@ -160,5 +162,20 @@ export class DrupalSiteFeedbackComponent implements OnInit {
           }, 3000);
         }
       );
+  }
+
+  resetForm() {
+
+    this.formManager.reset();
+
+    this.done       = [1];
+    this.submitting = false;
+    this.submitted  = false;
+    this.error      = false;
+    this.success    = false;
+
+    this.panels.forEach((panel, idx) => {
+      panel.expanded = idx === 0;
+    });
   }
 }

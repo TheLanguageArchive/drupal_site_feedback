@@ -42,13 +42,20 @@ function drupal_site_feedback_post_form_api($form_id) {
         return drupal_json_output($error);
     }
 
+    $data = file_get_contents('php://input');
+    $data = json_decode($data, true);
+
+    if (!isset($data['ds_feedback'])) {
+        return drupal_json_output($error);
+    }
+
     global $user;
     module_load_include('inc', 'drupal_site_feedback', 'includes/submission');
 
     try {
 
         $submission = new Submission();
-        $submission->submit($form_id, $user->uid, $_POST['ds_feedback']);
+        $submission->submit($form_id, $user->uid, $data['ds_feedback']);
 
         $output = [
 
