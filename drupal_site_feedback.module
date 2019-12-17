@@ -113,6 +113,6 @@ function drupal_site_feedback_demo() {
     drupal_add_js($module_path . '/app/dist/elements/drupal-site-feedback.js', ['scope' => 'footer']);
 
     return theme('drupal_site_feedback_demo', [
-        'url' => url('ds_feedback/' . variable_get('drupal_site_feedback_id')),
+        'url' => url('ds_feedback/295'), //variable_get('drupal_site_feedback_id')),
     ]);
 }
