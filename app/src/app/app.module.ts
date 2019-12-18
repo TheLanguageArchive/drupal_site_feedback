@@ -8,6 +8,7 @@ import { createCustomElement } from '@angular/elements';
 import { MatCardModule, MatExpansionModule, MatFormFieldModule } from '@angular/material';
 import { MatInputModule, MatDividerModule, MatButtonModule } from '@angular/material';
 import { MatIconModule, MatListModule, MatProgressSpinnerModule } from '@angular/material';
+import { MatTooltipModule } from '@angular/material';
 
 import { DrupalSiteFeedbackComponent } from './drupal-site-feedback/drupal-site-feedback.component';
 import { DrupalApiService } from './services/drupal-api.service';
@@ -31,6 +32,7 @@ import { FormService } from './services/form.service';
     MatIconModule,
     MatListModule,
     MatProgressSpinnerModule,
+    MatTooltipModule,
   ],
   entryComponents: [DrupalSiteFeedbackComponent],
   providers: [DrupalApiService, FormService],

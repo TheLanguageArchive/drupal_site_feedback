@@ -33,7 +33,7 @@
             </mat-accordion>
         </mat-card-content>
     </mat-card>
-    <button mat-fab color="primary" (click)="toggleForm()">
+    <button mat-fab color="primary" (click)="toggleForm()" matTooltip="Give feedback" matTooltipPosition="left">
         <mat-icon [@toggler]="visibility">{{ visibility == 'hidden' ? 'feedback' : 'close' }}</mat-icon>
     </button>
 </div>
