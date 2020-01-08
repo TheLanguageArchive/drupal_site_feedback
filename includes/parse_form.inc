@@ -44,6 +44,7 @@ class ParseForm
             'id'         => strtolower($node->title),
             'title'      => $node->title,
             'components' => [],
+            'captcha'    => $this->renderCaptcha($node),
         ];
 
         foreach ($webform['components'] as $component) {
@@ -150,5 +151,37 @@ class ParseForm
     private function allowed(string $type)
     {
         return in_array($type, ['textfield', 'email', 'textarea']);
+    }
+
+    /**
+     * Rendering captcha element
+     *
+     * @param stdClass $node
+     *
+     * @return string
+     */
+    private function renderCaptcha(stdClass $node)
+    {
+        $webform = drupal_get_form('webform_client_form_' . $node->nid, $node);
+
+        if (!isset($webform['captcha']) || !in_array($webform['captcha']['#captcha_type'], ['captcha/Math', 'recaptcha/reCAPTCHA'])) {
+            return [];
+        }
+
+        if ($webform['captcha']['#captcha_type'] === 'captcha/Math') {
+            $html = $webform['captcha']['captcha_widgets']['captcha_response']['#field_prefix'];
+        }
+
+        if ($webform['captcha']['#captcha_type'] === 'recaptcha/reCAPTCHA') {
+            $html = $webform['captcha']['captcha_widgets']['recaptcha_widget']['#markup'];
+        }
+
+        return [
+
+            'validation' => $webform['captcha']['#captcha_validate'],
+            'csid'       => intval($webform['captcha']['captcha_sid']['#value']),
+            'token'      => $webform['captcha']['captcha_token']['#value'],
+            'html'       => $html,
+        ];
     }
 }

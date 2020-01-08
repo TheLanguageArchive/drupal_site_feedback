@@ -58,4 +58,18 @@ class Submission
 
         return webform_submission_insert($node, $submission);
     }
+
+    private function validateCaptcha($captcha)
+    {
+        $solution = db_query(
+            'SELECT solution FROM {captcha_sessions} WHERE csid = :csid',
+            [':csid' => $captcha['csid']],
+        )->fetchField();
+
+        if (false === $solution) {
+            return false;
+        }
+
+        if ($captcha['validation']($solution, $captcha['response'], ))
+    }
 }
