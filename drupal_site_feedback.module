@@ -3,6 +3,7 @@ module_load_include('inc', 'drupal_site_feedback', 'includes/exceptions');
 
 use DrupalSiteFeedback\ParseForm;
 use DrupalSiteFeedback\Submission;
+use DrupalSiteFeedback\WebformCaptchaException;
 use DrupalSiteFeedback\WebformNotFoundException;
 
 function drupal_site_feedback_get_form_api($form_id) {
@@ -51,11 +52,12 @@ function drupal_site_feedback_post_form_api($form_id) {
 
     global $user;
     module_load_include('inc', 'drupal_site_feedback', 'includes/submission');
+    module_load_include('inc', 'drupal_site_feedback', 'includes/parse_form');
 
     try {
 
         $submission = new Submission();
-        $submission->submit($form_id, $user->uid, $data['ds_feedback']);
+        $submission->submit($form_id, $user->uid, $data['ds_feedback'], $data['captcha']);
 
         $output = [
 
@@ -64,8 +66,22 @@ function drupal_site_feedback_post_form_api($form_id) {
         ];
 
     } catch (WebformNotFoundException $e) {
+
         $output = $error;
+
+    } catch (WebformCaptchaException $e) {
+
+        $output = [
+
+            'type'    => 'error',
+            'message' => 'Webform captcha not valid',
+        ];
     }
+
+    $parser = new ParseForm();
+    $form   = $parser->parse($form_id);
+
+    $output['captcha'] = $form['captcha'];
 
     return drupal_json_output($output);
 }
@@ -118,6 +134,8 @@ function drupal_site_feedback_demo() {
 
     $module_path = drupal_get_path('module', 'drupal_site_feedback');
     drupal_add_js($module_path . '/app/dist/elements/drupal-site-feedback.js', ['scope' => 'footer']);
+
+    recaptcha_captcha('generate', 'reCAPTCHA');
 
     return theme('drupal_site_feedback_demo', [
         'url' => url('ds_feedback/295'), //variable_get('drupal_site_feedback_id')),

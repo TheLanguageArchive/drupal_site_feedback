@@ -43,8 +43,8 @@ class ParseForm
 
             'id'         => strtolower($node->title),
             'title'      => $node->title,
-            'components' => [],
             'captcha'    => $this->renderCaptcha($node),
+            'components' => [],
         ];
 
         foreach ($webform['components'] as $component) {
@@ -162,10 +162,11 @@ class ParseForm
      */
     private function renderCaptcha(stdClass $node)
     {
-        $webform = drupal_get_form('webform_client_form_' . $node->nid, $node);
+        $webform  = drupal_get_form('webform_client_form_' . $node->nid, $node);
+        drupal_render($webform);
 
         if (!isset($webform['captcha']) || !in_array($webform['captcha']['#captcha_type'], ['captcha/Math', 'recaptcha/reCAPTCHA'])) {
-            return [];
+            return false;
         }
 
         if ($webform['captcha']['#captcha_type'] === 'captcha/Math') {
@@ -178,9 +179,10 @@ class ParseForm
 
         return [
 
-            'validation' => $webform['captcha']['#captcha_validate'],
+            'type'       => $webform['captcha']['#captcha_type'],
             'csid'       => intval($webform['captcha']['captcha_sid']['#value']),
             'token'      => $webform['captcha']['captcha_token']['#value'],
+            'response'   => $webform['captcha']['captcha_widgets']['captcha_response']['#value'],
             'html'       => $html,
         ];
     }

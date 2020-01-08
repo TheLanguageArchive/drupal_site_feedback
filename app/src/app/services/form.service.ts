@@ -10,6 +10,7 @@ export class FormService {
 
     buildManager(form: FormInputGroup) {
 
+        let captcha = false;
         let manager = this.fb.group({});
 
         form.items.forEach((input: FormInputGroup) => {
@@ -28,6 +29,12 @@ export class FormService {
                 }
 
                 group.addControl(item.key, this.fb.control('', validators));
+
+                if (false === captcha) {
+
+                    captcha = true;
+                    group.addControl('captcha', this.fb.control(''));
+                }
             });
 
             manager.addControl(input.key, group);

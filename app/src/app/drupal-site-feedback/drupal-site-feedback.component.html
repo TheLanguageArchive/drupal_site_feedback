@@ -15,7 +15,11 @@
                             <textarea matInput cdkTextareaAutosize *ngSwitchCase="'textarea'" [placeholder]="item.placeholder" [formControlName]="item.key"></textarea>
                         </mat-form-field>
                     </div>
-                    <div class="g-recaptcha" data-sitekey="6Lc5msgUAAAAAPLkIGQGjPr7igvRWSuoEMG2QYiX" data-theme="light" data-type="image"></div>
+                    <div *ngIf="group.captcha && group.captcha.type == 'recaptcha/reCAPTCHA'" [innerHtml]="group.captcha.html | safeHtml"></div>
+                    <mat-form-field *ngIf="group.captcha && group.captcha.type == 'captcha/Math'" class="full-width">
+                        <mat-label [innerHtml]="group.captcha.html"></mat-label>
+                        <input matInput formControlName="captcha">
+                    </mat-form-field>
                     <mat-action-row *ngIf="!isSubmitting()">
                         <button mat-button [disabled]="isPreviousStepButtonDisabled(group)" (click)="previousStep(group)">Previous</button>
                         <button mat-raised-button color="primary" cdkFocusInitial [disabled]="!validate(group.key)" (click)="nextStep(group)" *ngIf="!isLastStep(group)">Next</button>

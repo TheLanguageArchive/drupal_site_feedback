@@ -6,3 +6,4 @@ namespace DrupalSiteFeedback;
  * @package Drupal Site Feedback
  */
 class WebformNotFoundException extends \Exception {}
+class WebformCaptchaException  extends \Exception {}

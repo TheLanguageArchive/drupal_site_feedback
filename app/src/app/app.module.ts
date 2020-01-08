@@ -13,10 +13,12 @@ import { MatTooltipModule } from '@angular/material';
 import { DrupalSiteFeedbackComponent } from './drupal-site-feedback/drupal-site-feedback.component';
 import { DrupalApiService } from './services/drupal-api.service';
 import { FormService } from './services/form.service';
+import { SafeHtmlPipe } from './safe-html.pipe';
 
 @NgModule({
   declarations: [
     DrupalSiteFeedbackComponent,
+    SafeHtmlPipe,
   ],
   imports: [
     BrowserModule,

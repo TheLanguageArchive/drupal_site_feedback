@@ -1,6 +1,6 @@
-import { Component, ViewChildren, QueryList, OnInit, Input } from '@angular/core';
+import { Component, ViewChildren, QueryList, OnInit, Input, ViewChild, Query, ElementRef } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { MatExpansionPanel } from '@angular/material';
+import { MatExpansionPanel, MatInput } from '@angular/material';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 
 import { FormInputGroup } from '../form-input';
@@ -54,6 +54,7 @@ export class DrupalSiteFeedbackComponent implements OnInit {
 
           this.formInput   = data;
           this.formManager = this.formService.buildManager(this.formInput);
+
         },
         error => {
           console.log(error);
@@ -138,19 +139,51 @@ export class DrupalSiteFeedbackComponent implements OnInit {
     this.submitting = true;
 
     this.drupalApiService
-      .submitForm(this.formManager.value)
+      .submitForm(this.formInput, this.formManager.value)
       .subscribe(
 
-        data => {
+        (data: any) => {
 
-          this.success = true;
+          if (data.type === 'error') {
 
-          setTimeout(_ => {
-            this.resetForm();
-          }, 3000);
+            this.error = true;
+
+            this.formInput.items[0].captcha = data.captcha;
+
+            this.formInput.items.forEach(group => {
+
+              let captcha = this.formManager.get(group.key).get('captcha');
+
+              if (captcha) {
+                captcha.reset();
+              }
+            });
+
+            setTimeout(_ => {
+
+              this.done       = [1];
+              this.success    = false;
+              this.error      = false;
+              this.submitting = false;
+
+              this.panels.forEach((panel, idx) => {
+                panel.expanded = idx === 0;
+              });
+
+            }, 3000);
+
+          } else {
+
+            this.success = true;
+
+            setTimeout(_ => {
+              this.resetForm();
+            }, 3000);
+          }
         },
 
         error => {
+
           this.error = true;
 
           setTimeout(_ => {
@@ -177,5 +210,9 @@ export class DrupalSiteFeedbackComponent implements OnInit {
     this.panels.forEach((panel, idx) => {
       panel.expanded = idx === 0;
     });
+  }
+
+  dump(data: any) {
+    console.log(data);
   }
 }

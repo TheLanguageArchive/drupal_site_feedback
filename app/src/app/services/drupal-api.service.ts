@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { FormInputGroup, FormInputTextfield, FormInputEmail, FormInputTextarea } from '../form-input';
+import { FormInputGroup, FormInputTextfield, FormInputEmail, FormInputTextarea, FormCaptcha, CaptchaOptions } from '../form-input';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -8,7 +8,7 @@ export interface DrupalSiteFeedbackErrorInterface {
 
     type: 'error';
     message: string;
-}
+};
 
 export interface DrupalSiteFeedbackSuccessInterface {
 
@@ -20,8 +20,9 @@ export interface DrupalSiteFeedbackSuccessInterface {
         components: {
             [key: number]: FormInputGroup
         };
+        captcha: CaptchaOptions | false;
     };
-}
+};
 
 @Injectable()
 export class DrupalApiService {
@@ -44,10 +45,28 @@ export class DrupalApiService {
             );
     }
 
-    submitForm(data: {}) {
+    submitForm(input: FormInputGroup, data: {}) {
+
+        let params = {
+
+            ds_feedback: data,
+            captcha: null,
+        };
+
+        if (input.items[0].captcha) {
+
+            let form = Object.values(data) as [{captcha: string}];
+
+            params.captcha = {
+
+                sid: input.items[0].captcha.csid,
+                token: input.items[0].captcha.token,
+                response: form[0].captcha,
+            };
+        }
 
         return this.http
-            .post(`${this.url}/create`, {ds_feedback: data});
+            .post(`${this.url}/create`, params);
     }
 
     serialize(data: DrupalSiteFeedbackSuccessInterface | DrupalSiteFeedbackErrorInterface)
@@ -56,7 +75,9 @@ export class DrupalApiService {
             throw new Error(data.message as string);
         }
 
+        let captcha      = false;
         const components = [];
+
         for (let idx in data.message.components) {
 
             let component = data.message.components[idx];
@@ -84,12 +105,22 @@ export class DrupalApiService {
 
             if (items.length > 0) {
 
-                components.push(new FormInputGroup(component.key, component.title, items, {
-                    order: component.order
-                }));
+                let options = {
+
+                    order: component.order,
+                    captcha: null,
+                };
+
+                if (false === captcha && false !== data.message.captcha) {
+
+                    captcha         = true;
+                    options.captcha = new FormCaptcha(data.message.captcha);
+                }
+
+                components.push(new FormInputGroup(component.key, component.title, items, options));
             }
         }
 
         return new FormInputGroup(data.message.id, data.message.title, components);
     }
-}
+};

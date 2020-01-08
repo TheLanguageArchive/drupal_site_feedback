@@ -1,3 +1,5 @@
+import { FormCaptcha } from './form-captcha';
+
 export interface FormInputControlOptions<T> {
 
     value?: T;
@@ -7,7 +9,8 @@ export interface FormInputControlOptions<T> {
     required?: boolean;
     order?: number;
     type?: string;
-}
+    captcha?: FormCaptcha;
+};
 
 export class FormInputControl<T> {
 
@@ -18,6 +21,7 @@ export class FormInputControl<T> {
     required: boolean;
     order: number;
     type: string;
+    captcha: FormCaptcha | null;
 
     constructor(options: FormInputControlOptions<T> = {}) {
 
@@ -28,5 +32,6 @@ export class FormInputControl<T> {
         this.required    = !!options.required;
         this.order       = options.order === undefined ? 1 : options.order;
         this.type        = options.type || '';
+        this.captcha     = options.captcha || null;
     }
-}
+};

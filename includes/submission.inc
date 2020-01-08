@@ -2,6 +2,7 @@
 namespace DrupalSiteFeedback;
 
 use DrupalSiteFeedback\WebformNotFoundException;
+use stdClass;
 
 /**
  * Submit data to form
@@ -15,16 +16,22 @@ class Submission
      * Submit data to form
      *
      * @param integer $formId
-     * @param array $data
+     * @param integer $userId
+     * @param array   $values
+     * @param array   $captcha
      *
      * @return void
      */
-    public function submit(int $formId, int $userId, array $values)
+    public function submit(int $formId, int $userId, array $values, array $captcha)
     {
         $node = node_load($formId);
 
         if (!isset($node->webform)) {
             throw new WebformNotFoundException(sprintf('Node with ID=%d is not a webform', $formId));
+        }
+
+        if (false === $this->validateCaptcha($node, $captcha)) {
+            throw new WebformCaptchaException(sprintf('Webform with ID=%d captcha invalid', $formId));
         }
 
         $data = [];
@@ -59,17 +66,28 @@ class Submission
         return webform_submission_insert($node, $submission);
     }
 
-    private function validateCaptcha($captcha)
+    /**
+     * Validating captcha
+     *
+     * @param stdClass $node
+     * @param array $captcha
+     */
+    public function validateCaptcha(stdClass $node, array $captcha)
     {
+        $webform = drupal_get_form('webform_client_form_' . $node->nid, $node);
+
+        $element = [
+            '#captcha_validate' => $webform['captcha']['#captcha_validate'],
+        ];
+
         $solution = db_query(
-            'SELECT solution FROM {captcha_sessions} WHERE csid = :csid',
-            [':csid' => $captcha['csid']],
-        )->fetchField();
+          'SELECT solution FROM {captcha_sessions} WHERE csid = :csid',
+          array(':csid' => $captcha['sid'])
+          )
+          ->fetchField();
 
-        if (false === $solution) {
-            return false;
-        }
+        $validation = $webform['captcha']['#captcha_validate'];
 
-        if ($captcha['validation']($solution, $captcha['response'], ))
+        return $validation($solution, $captcha['response']);
     }
 }
