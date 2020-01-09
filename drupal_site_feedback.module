@@ -125,6 +125,7 @@ function drupal_site_feedback_theme() {
     return [
 
         'drupal_site_feedback_tag' => [
+            // 'render element' => 'content',
             'template' => 'theme/drupal-site-feedback-tag',
         ],
     ];
@@ -140,4 +141,8 @@ function drupal_site_feedback_tag() {
     return theme('drupal_site_feedback_tag', [
         'url' => url('ds_feedback/' . variable_get('drupal_site_feedback_id')),
     ]);
+}
+
+function drupal_site_feedback_preprocess_page(&$vars) {
+    $vars['page']['drupal_site_feedback'] = drupal_site_feedback_tag();
 }
