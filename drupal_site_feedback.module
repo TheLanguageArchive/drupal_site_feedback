@@ -112,7 +112,7 @@ function drupal_site_feedback_menu() {
 
         'title'           => 'Getting form in json form',
         'type'            => MENU_CALLBACK,
-        'page callback'   => 'drupal_site_feedback_demo',
+        'page callback'   => 'drupal_site_feedback_tag',
         'page arguments'  => [1],
         'access callback' => true,
     ];
@@ -124,20 +124,20 @@ function drupal_site_feedback_theme() {
 
     return [
 
-        'drupal_site_feedback_demo' => [
-            'template' => 'theme/drupal-site-feedback-demo',
+        'drupal_site_feedback_tag' => [
+            'template' => 'theme/drupal-site-feedback-tag',
         ],
     ];
 }
 
-function drupal_site_feedback_demo() {
+function drupal_site_feedback_tag() {
 
     $module_path = drupal_get_path('module', 'drupal_site_feedback');
     drupal_add_js($module_path . '/app/dist/elements/drupal-site-feedback.js', ['scope' => 'footer']);
 
     recaptcha_captcha('generate', 'reCAPTCHA');
 
-    return theme('drupal_site_feedback_demo', [
-        'url' => url('ds_feedback/295'), //variable_get('drupal_site_feedback_id')),
+    return theme('drupal_site_feedback_tag', [
+        'url' => url('ds_feedback/' . variable_get('drupal_site_feedback_id')),
     ]);
 }
