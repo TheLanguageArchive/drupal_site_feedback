@@ -7,6 +7,8 @@ import { FormInputGroup } from '../form-input';
 import { DrupalApiService } from '../services/drupal-api.service';
 import { FormService } from '../services/form.service';
 
+declare var grecaptcha: any;
+
 @Component({
   templateUrl: './drupal-site-feedback.component.html',
   styleUrls: ['./drupal-site-feedback.component.scss'],
@@ -33,6 +35,7 @@ export class DrupalSiteFeedbackComponent implements OnInit {
   submitted  = false;
   error      = false;
   success    = false;
+  firstShown = false;
 
   @Input() url: string;
   @Input() width: number = 300;
@@ -54,7 +57,6 @@ export class DrupalSiteFeedbackComponent implements OnInit {
 
           this.formInput   = data;
           this.formManager = this.formService.buildManager(this.formInput);
-
         },
         error => {
           console.log(error);
@@ -67,7 +69,25 @@ export class DrupalSiteFeedbackComponent implements OnInit {
   }
 
   toggleForm() {
+
     this.visibility = this.visibility === 'shown' ? 'hidden' : 'shown';
+
+    if (this.visibility === 'shown' && false === this.firstShown) {
+
+      this.firstShown = true;
+
+      let recaptcha = document.querySelector('.g-recaptcha');
+      if (recaptcha) {
+
+        try {
+
+          grecaptcha.render(recaptcha, {
+            sitekey: this.formInput.items[0].captcha.sitekey,
+          });
+
+        } catch (e) {}
+      }
+    }
   }
 
   nextStep(group: FormInputGroup) {
@@ -157,6 +177,10 @@ export class DrupalSiteFeedbackComponent implements OnInit {
               if (captcha) {
                 captcha.reset();
               }
+
+              if (this.formInput.items[0].captcha.type === 'recaptcha/reCAPTCHA') {
+                grecaptcha.reset();
+              }
             });
 
             setTimeout(_ => {
@@ -210,6 +234,10 @@ export class DrupalSiteFeedbackComponent implements OnInit {
     this.panels.forEach((panel, idx) => {
       panel.expanded = idx === 0;
     });
+
+    if (this.formInput.items[0].captcha.type === 'recaptcha/reCAPTCHA') {
+      grecaptcha.reset();
+    }
   }
 
   dump(data: any) {

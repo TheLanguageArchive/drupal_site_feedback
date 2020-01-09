@@ -63,6 +63,10 @@ export class DrupalApiService {
                 token: input.items[0].captcha.token,
                 response: form[0].captcha,
             };
+
+            if (input.items[0].captcha.type === 'recaptcha/reCAPTCHA') {
+                params.captcha.response = (document.getElementById('g-recaptcha-response') as HTMLTextAreaElement).value;
+            }
         }
 
         return this.http

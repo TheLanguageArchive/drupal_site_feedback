@@ -5,6 +5,7 @@ export interface CaptchaOptions {
     token: string;
     response: string;
     html: string;
+    sitekey: string;
 };
 
 export class FormCaptcha {
@@ -14,6 +15,7 @@ export class FormCaptcha {
     token: string;
     response: string;
     html: string;
+    sitekey: string;
 
     constructor(captcha: CaptchaOptions) {
 
@@ -22,5 +24,6 @@ export class FormCaptcha {
         this.token      = captcha.token;
         this.response   = captcha.response;
         this.html       = captcha.html;
+        this.sitekey    = captcha.sitekey;
     }
 };

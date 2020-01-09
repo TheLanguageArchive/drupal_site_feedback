@@ -184,6 +184,7 @@ class ParseForm
             'token'      => $webform['captcha']['captcha_token']['#value'],
             'response'   => $webform['captcha']['captcha_widgets']['captcha_response']['#value'],
             'html'       => $html,
+            'sitekey'    => variable_get('recaptcha_site_key', ''),
         ];
     }
 }

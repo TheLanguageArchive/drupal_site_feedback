@@ -88,6 +88,13 @@ class Submission
 
         $validation = $webform['captcha']['#captcha_validate'];
 
-        return $validation($solution, $captcha['response']);
+        $element    = [];
+        $form_state = [];
+
+        if ($webform['captcha']['#captcha_type'] === 'recaptcha/reCAPTCHA') {
+            $_POST['g-recaptcha-response'] = $captcha['response'];
+        }
+
+        return $validation($solution, $captcha['response'], $element, $form_state);
     }
 }
