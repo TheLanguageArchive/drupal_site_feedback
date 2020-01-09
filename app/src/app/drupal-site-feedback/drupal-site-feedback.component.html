@@ -34,6 +34,9 @@
                     <mat-action-row *ngIf="isError()">
                         Feedback could not be submitted
                     </mat-action-row>
+                    <mat-action-row *ngIf="isCaptchaError()">
+                        Captcha was invalid
+                    </mat-action-row>
                 </mat-expansion-panel>
             </mat-accordion>
         </mat-card-content>

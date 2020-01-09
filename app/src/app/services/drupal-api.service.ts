@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { FormInputGroup, FormInputTextfield, FormInputEmail, FormInputTextarea, FormCaptcha, CaptchaOptions } from '../form-input';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { CaptchaService } from './captcha.service';
+import { FormGroup } from '@angular/forms';
 
 export interface DrupalSiteFeedbackErrorInterface {
 
@@ -27,9 +29,14 @@ export interface DrupalSiteFeedbackSuccessInterface {
 @Injectable()
 export class DrupalApiService {
 
+    static WEBFORM_FETCHED    = 1001;
+    static WEBFORM_NOT_FOUND  = 1002;
+    static SUBMISSION_SUCCESS = 1003;
+    static CAPTCHA_INVALID    = 1004;
+
     url: string;
 
-    constructor(private http: HttpClient) {
+    constructor(private http: HttpClient, private captchaService: CaptchaService) {
     }
 
     setUrl(url: string) {
@@ -45,29 +52,13 @@ export class DrupalApiService {
             );
     }
 
-    submitForm(input: FormInputGroup, data: {}) {
+    submitForm(input: FormInputGroup, manager: FormGroup) {
 
         let params = {
 
-            ds_feedback: data,
-            captcha: null,
+            ds_feedback: manager.value,
+            captcha: this.captchaService.getParams(input, manager),
         };
-
-        if (input.items[0].captcha) {
-
-            let form = Object.values(data) as [{captcha: string}];
-
-            params.captcha = {
-
-                sid: input.items[0].captcha.csid,
-                token: input.items[0].captcha.token,
-                response: form[0].captcha,
-            };
-
-            if (input.items[0].captcha.type === 'recaptcha/reCAPTCHA') {
-                params.captcha.response = (document.getElementById('g-recaptcha-response') as HTMLTextAreaElement).value;
-            }
-        }
 
         return this.http
             .post(`${this.url}/create`, params);
@@ -79,8 +70,9 @@ export class DrupalApiService {
             throw new Error(data.message as string);
         }
 
-        let captcha      = false;
-        const components = [];
+        let captcha    = 0;
+        let total      = Object.values(data.message.components).length;
+        let components = [];
 
         for (let idx in data.message.components) {
 
@@ -115,9 +107,8 @@ export class DrupalApiService {
                     captcha: null,
                 };
 
-                if (false === captcha && false !== data.message.captcha) {
-
-                    captcha         = true;
+                captcha += 1;
+                if (captcha === total && false !== data.message.captcha) {
                     options.captcha = new FormCaptcha(data.message.captcha);
                 }
 

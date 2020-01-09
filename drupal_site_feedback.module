@@ -16,6 +16,7 @@ function drupal_site_feedback_get_form_api($form_id) {
         $output = [
 
             'type'    => 'success',
+            'code'    => 1001,
             'message' => $parser->parse($form_id),
         ];
 
@@ -24,6 +25,7 @@ function drupal_site_feedback_get_form_api($form_id) {
         $output = [
 
             'type'    => 'error',
+            'code'    => 1002,
             'message' => 'Could not find webform',
         ];
     }
@@ -36,6 +38,7 @@ function drupal_site_feedback_post_form_api($form_id) {
     $error = [
 
         'type'    => 'error',
+        'code'    => 1002,
         'message' => 'Could not find webform',
     ];
 
@@ -62,6 +65,7 @@ function drupal_site_feedback_post_form_api($form_id) {
         $output = [
 
             'type'    => 'success',
+            'code'    => 1003,
             'message' => 'Submission created',
         ];
 
@@ -74,6 +78,7 @@ function drupal_site_feedback_post_form_api($form_id) {
         $output = [
 
             'type'    => 'error',
+            'code'    => 1004,
             'message' => 'Webform captcha not valid',
         ];
     }
@@ -125,7 +130,6 @@ function drupal_site_feedback_theme() {
     return [
 
         'drupal_site_feedback_tag' => [
-            // 'render element' => 'content',
             'template' => 'theme/drupal-site-feedback-tag',
         ],
     ];

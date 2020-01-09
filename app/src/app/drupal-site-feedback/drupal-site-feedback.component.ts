@@ -3,11 +3,10 @@ import { FormGroup } from '@angular/forms';
 import { MatExpansionPanel, MatInput } from '@angular/material';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 
-import { FormInputGroup } from '../form-input';
+import { FormInputGroup, FormCaptcha } from '../form-input';
 import { DrupalApiService } from '../services/drupal-api.service';
 import { FormService } from '../services/form.service';
-
-declare var grecaptcha: any;
+import { CaptchaService } from '../services/captcha.service';
 
 @Component({
   templateUrl: './drupal-site-feedback.component.html',
@@ -28,14 +27,15 @@ declare var grecaptcha: any;
 })
 export class DrupalSiteFeedbackComponent implements OnInit {
 
-  title      = 'Feedback';
-  visibility = 'hidden';
-  done       = [1];
-  submitting = false;
-  submitted  = false;
-  error      = false;
-  success    = false;
-  firstShown = false;
+  title        = 'Feedback';
+  visibility   = 'hidden';
+  done         = [1];
+  submitting   = false;
+  submitted    = false;
+  error        = false;
+  success      = false;
+  captchaError = false;
+  firstShown   = false;
 
   @Input() url: string;
   @Input() width: number = 300;
@@ -45,7 +45,7 @@ export class DrupalSiteFeedbackComponent implements OnInit {
   formInput: FormInputGroup;
   formManager: FormGroup;
 
-  constructor(private drupalApiService: DrupalApiService, private formService: FormService) {
+  constructor(private drupalApiService: DrupalApiService, private formService: FormService, private captchaService: CaptchaService) {
   }
 
   ngOnInit() {
@@ -75,18 +75,7 @@ export class DrupalSiteFeedbackComponent implements OnInit {
     if (this.visibility === 'shown' && false === this.firstShown) {
 
       this.firstShown = true;
-
-      let recaptcha = document.querySelector('.g-recaptcha');
-      if (recaptcha) {
-
-        try {
-
-          grecaptcha.render(recaptcha, {
-            sitekey: this.formInput.items[0].captcha.sitekey,
-          });
-
-        } catch (e) {}
-      }
+      this.captchaService.render(this.formInput);
     }
   }
 
@@ -143,7 +132,7 @@ export class DrupalSiteFeedbackComponent implements OnInit {
   }
 
   isProcessing() {
-    return this.isSubmitting() && !this.isSuccess() && !this.isError();
+    return this.isSubmitting() && !this.isSuccess() && !this.isError() && !this.isCaptchaError();
   }
 
   isSuccess() {
@@ -154,45 +143,47 @@ export class DrupalSiteFeedbackComponent implements OnInit {
     return true === this.error;
   }
 
+  isCaptchaError() {
+    return true === this.captchaError;
+  }
+
   submit() {
 
     this.submitting = true;
 
     this.drupalApiService
-      .submitForm(this.formInput, this.formManager.value)
+      .submitForm(this.formInput, this.formManager)
       .subscribe(
 
         (data: any) => {
 
+          console.log(data);
           if (data.type === 'error') {
 
-            this.error = true;
+            if (data.code === DrupalApiService.CAPTCHA_INVALID) {
 
-            this.formInput.items[0].captcha = data.captcha;
+              this.captchaError = true;
+              this.captchaService.resetCaptcha(this.formInput, this.formManager, data.captcha);
 
-            this.formInput.items.forEach(group => {
-
-              let captcha = this.formManager.get(group.key).get('captcha');
-
-              if (captcha) {
-                captcha.reset();
-              }
-
-              if (this.formInput.items[0].captcha.type === 'recaptcha/reCAPTCHA') {
-                grecaptcha.reset();
-              }
-            });
+            } else {
+              this.error = true;
+            }
 
             setTimeout(_ => {
 
-              this.done       = [1];
-              this.success    = false;
-              this.error      = false;
-              this.submitting = false;
+              this.submitting   = false;
+              this.submitted    = false;
+              this.error        = false;
+              this.success      = false;
+              this.captchaError = false;
 
-              this.panels.forEach((panel, idx) => {
-                panel.expanded = idx === 0;
-              });
+              if (data.code !== DrupalApiService.CAPTCHA_INVALID) {
+
+                this.done = [1];
+                this.panels.forEach((panel, idx) => {
+                  panel.expanded = idx === 0;
+                });
+              }
 
             }, 3000);
 
@@ -201,7 +192,7 @@ export class DrupalSiteFeedbackComponent implements OnInit {
             this.success = true;
 
             setTimeout(_ => {
-              this.resetForm();
+              this.resetForm(data.captcha);
             }, 3000);
           }
         },
@@ -212,32 +203,33 @@ export class DrupalSiteFeedbackComponent implements OnInit {
 
           setTimeout(_ => {
 
-            this.success    = false;
-            this.error      = false;
-            this.submitting = false;
+            this.submitting   = false;
+            this.submitted    = false;
+            this.error        = false;
+            this.success      = false;
+            this.captchaError = false;
 
           }, 3000);
         }
       );
   }
 
-  resetForm() {
+  resetForm(captcha: FormCaptcha) {
 
     this.formManager.reset();
 
-    this.done       = [1];
-    this.submitting = false;
-    this.submitted  = false;
-    this.error      = false;
-    this.success    = false;
+    this.done         = [1];
+    this.submitting   = false;
+    this.submitted    = false;
+    this.error        = false;
+    this.success      = false;
+    this.captchaError = false;
 
     this.panels.forEach((panel, idx) => {
       panel.expanded = idx === 0;
     });
 
-    if (this.formInput.items[0].captcha.type === 'recaptcha/reCAPTCHA') {
-      grecaptcha.reset();
-    }
+    this.captchaService.resetCaptcha(this.formInput, this.formManager, captcha);
   }
 
   dump(data: any) {
