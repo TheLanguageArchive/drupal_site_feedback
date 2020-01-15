@@ -8,7 +8,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "build:element": "ng build --prod --output-hashing none && node package-element.js"
+    "build:element": "ng build --prod --output-hashing none --extraWebpackConfig webpack.extra.js && node package-element.js"
   },
   "private": true,
   "dependencies": {
@@ -23,6 +23,7 @@
     "@angular/platform-browser": "^8.2.14",
     "@angular/platform-browser-dynamic": "^8.2.14",
     "@angular/router": "^8.2.14",
+    "@webcomponents/custom-elements": "^1.3.2",
     "@webcomponents/webcomponentsjs": "^2.4.1",
     "concat": "^1.0.3",
     "document-register-element": "^1.7.2",
@@ -47,6 +48,7 @@
     "karma-coverage-istanbul-reporter": "~2.0.1",
     "karma-jasmine": "~2.0.1",
     "karma-jasmine-html-reporter": "^1.5.1",
+    "ngx-build-plus": "^9.0.2",
     "protractor": "~5.4.0",
     "ts-node": "~7.0.0",
     "tslint": "~5.15.0",
