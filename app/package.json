@@ -8,7 +8,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "build:element": "ng build --prod --output-hashing none --extraWebpackConfig webpack.extra.js && node package-element.js"
+    "build:element": "ng build --prod --output-hashing none --extraWebpackConfig webpack.extra.js && npm run build:package",
+    "build:package": "node package-element.js"
   },
   "private": true,
   "dependencies": {

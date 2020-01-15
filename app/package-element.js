@@ -1,5 +1,7 @@
 const fs = require('fs-extra');
 const concat = require('concat');
+const zlib = require('zlib');
+const gzip = zlib.createGzip();
 
 (async function build() {
 
@@ -13,4 +15,12 @@ const concat = require('concat');
         './dist/drupal-site-feedback/main.js',
 
     ], 'dist/elements/drupal-site-feedback.js');
+
+    fs.createReadStream('dist/elements/drupal-site-feedback.js')
+        .pipe(gzip)
+        .on('error', () => {})
+        .pipe(
+            fs.createWriteStream('dist/elements/drupal-site-feedback.js.gz')
+        )
+        .on('error', () => {});
 })();

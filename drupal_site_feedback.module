@@ -138,7 +138,7 @@ function drupal_site_feedback_theme() {
 function drupal_site_feedback_tag() {
 
     $module_path = drupal_get_path('module', 'drupal_site_feedback');
-    drupal_add_js($module_path . '/app/dist/elements/drupal-site-feedback.js', ['scope' => 'footer']);
+    drupal_add_js($module_path . '/app/dist/elements/drupal-site-feedback.js.gz', ['scope' => 'footer']);
 
     recaptcha_captcha('generate', 'reCAPTCHA');
 
