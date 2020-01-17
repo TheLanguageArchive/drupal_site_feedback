@@ -22,7 +22,7 @@ class Submission
      *
      * @return void
      */
-    public function submit(int $formId, int $userId, array $values, array $captcha)
+    public function submit(int $formId, int $userId, array $values, array $captcha = null)
     {
         $node = node_load($formId);
 
@@ -30,8 +30,11 @@ class Submission
             throw new WebformNotFoundException(sprintf('Node with ID=%d is not a webform', $formId));
         }
 
-        if (false === $this->validateCaptcha($node, $captcha)) {
-            throw new WebformCaptchaException(sprintf('Webform with ID=%d captcha invalid', $formId));
+        if (null !== $captcha) {
+
+            if (false === $this->validateCaptcha($node, $captcha)) {
+                throw new WebformCaptchaException(sprintf('Webform with ID=%d captcha invalid', $formId));
+            }
         }
 
         $data = [];
@@ -63,7 +66,10 @@ class Submission
             'data'        => $data,
         ];
 
-        return webform_submission_insert($node, $submission);
+        webform_submission_insert($node, $submission);
+        webform_submission_send_mail($node, $submission);
+
+        return $submission;
     }
 
     /**
