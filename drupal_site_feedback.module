@@ -122,6 +122,17 @@ function drupal_site_feedback_menu() {
         'access callback' => true,
     ];
 
+    $items['admin/content/drupal_site_feedback'] = [
+
+        'title'           => 'Feedback',
+        'type'            => MENU_LOCAL_TASK,
+        'page callback'   => 'drupal_get_form',
+        'page arguments'  => ['drupal_site_feedback_admin_form'],
+        'access callback' => 'user_access',
+        'access arguments' => ['change site feedback form'],
+        'file'            => 'includes/admin.inc',
+    ];
+
     return $items;
 }
 
@@ -131,6 +142,18 @@ function drupal_site_feedback_theme() {
 
         'drupal_site_feedback_tag' => [
             'template' => 'theme/drupal-site-feedback-tag',
+        ],
+    ];
+}
+
+function drupal_site_feedback_permission() {
+
+    return [
+
+        'change site feedback form' => [
+
+            'title'       => t('Change which webform to be used as feedback form'),
+            'description' => t('Grants access to allow changing which webform should be used for the site feedback form'),
         ],
     ];
 }
