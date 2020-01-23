@@ -122,10 +122,10 @@ function drupal_site_feedback_menu() {
         'access callback' => true,
     ];
 
-    $items['admin/content/drupal_site_feedback'] = [
+    $items['admin/config/content/drupal_site_feedback'] = [
 
         'title'           => 'Feedback',
-        'type'            => MENU_LOCAL_TASK,
+        'type'            => MENU_NORMAL_ITEM,
         'page callback'   => 'drupal_get_form',
         'page arguments'  => ['drupal_site_feedback_admin_form'],
         'access callback' => 'user_access',
