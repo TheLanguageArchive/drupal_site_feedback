@@ -1,5 +1,5 @@
 <div class="feedback-container" *ngIf="formInput">
-    <mat-card class="card" [ngStyle]="{'width': width + 'px'}" [@visibilityChanged]="visibility">
+    <mat-card class="card" [ngStyle]="{'width': width + 'px'}" [@visibilityChanged]="visibility" [@displayChanged]="visibility">
         <mat-card-title>{{ formInput.title }}</mat-card-title>
         <mat-card-content>
             <mat-accordion>

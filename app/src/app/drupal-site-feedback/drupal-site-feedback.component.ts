@@ -17,6 +17,12 @@ import { CaptchaService } from '../services/captcha.service';
       state('hidden', style({opacity: 0, marginBottom: '-50px'})),
       transition('* => *', animate('.5s')),
     ]),
+    trigger('displayChanged', [
+      state('shown', style({display: 'block'})),
+      state('hidden', style({display: 'none'})),
+      transition('hidden => shown', animate('0ms ease')),
+      transition('shown => hidden', animate('0ms 0.5s ease')),
+    ]),
     trigger('toggler', [
       transition('hidden <=> shown', [
         style({transform: 'scale(1.5)', opacity: 0}),
