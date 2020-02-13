@@ -8,7 +8,7 @@
                         <mat-panel-title>{{ group.title }}</mat-panel-title>
                     </mat-expansion-panel-header>
                     <div *ngFor="let item of group.items">
-                        <mat-form-field [ngSwitch]="item.type" class="full-width">
+                        <mat-form-field [ngSwitch]="item.type" *ngIf="item.type != 'hidden'" class="full-width">
                             <mat-label>{{ item.label }}</mat-label>
                             <input matInput *ngSwitchCase="'textfield'" [placeholder]="item.placeholder" [formControlName]="item.key">
                             <input matInput *ngSwitchCase="'email'" [type]="item.type" [placeholder]="item.placeholder" [formControlName]="item.key">

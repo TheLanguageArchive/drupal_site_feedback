@@ -29,7 +29,12 @@ export class FormService {
                     validators.push(Validators.email);
                 }
 
-                group.addControl(item.key, this.fb.control('', validators));
+                let value = '';
+                if (item.type === 'hidden') {
+                    value = item.placeholder;
+                }
+
+                group.addControl(item.key, this.fb.control(value, validators));
 
                 captcha += 1;
                 if (captcha === total) {

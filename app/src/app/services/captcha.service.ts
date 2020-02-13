@@ -61,6 +61,10 @@ export class CaptchaService {
 
         let item = this.getCaptchaItem(formInput);
 
+        if (!item) {
+            return;
+        }
+
         // first resetting math field
         let captchaInput = manager.get(item.key).get('captcha');
 

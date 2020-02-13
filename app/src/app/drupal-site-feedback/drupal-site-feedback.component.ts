@@ -163,7 +163,6 @@ export class DrupalSiteFeedbackComponent implements OnInit {
 
         (data: any) => {
 
-          console.log(data);
           if (data.type === 'error') {
 
             if (data.code === DrupalApiService.CAPTCHA_INVALID) {

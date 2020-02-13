@@ -54,11 +54,14 @@ class ParseForm
 
             if ($pid === 0) {
 
-                $form['components'][$cid] = $this->parseFieldset($component);
+                if ($component['type'] === 'fieldset') {
+                    $form['components'][$cid] = $this->parseFieldset($component);
+                }
 
                 if (true === $this->allowed($component['type'])) {
 
                     // component is not inside a fieldset, so let's create one
+                    $form['components'][$cid] = $this->parseFieldset($component);
                     $form['components'][$cid]['items'][] = $this->parseItem($component);
                 }
 
@@ -129,12 +132,15 @@ class ParseForm
      */
     private function parseItem(array $component)
     {
+        $params        = drupal_get_query_parameters();
+        $params['req'] = isset($params['req']) ? $params['req'] : '';
+
         return [
 
             'value'       => '',
             'key'         => $component['form_key'],
             'label'       => $component['name'],
-            'placeholder' => $component['value'],
+            'placeholder' => str_replace('[current-page:url]', urldecode($params['req']), $component['value']),
             'required'    => (int)$component['required'] === 1,
             'order'       => 0,
             'type'        => $component['type'],
@@ -150,7 +156,7 @@ class ParseForm
      */
     private function allowed(string $type)
     {
-        return in_array($type, ['textfield', 'email', 'textarea']);
+        return in_array($type, ['textfield', 'email', 'textarea', 'hidden']);
     }
 
     /**

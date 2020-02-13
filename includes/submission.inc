@@ -86,11 +86,9 @@ class Submission
             '#captcha_validate' => $webform['captcha']['#captcha_validate'],
         ];
 
-        $solution = db_query(
-          'SELECT solution FROM {captcha_sessions} WHERE csid = :csid',
-          array(':csid' => $captcha['sid'])
-          )
-          ->fetchField();
+        $solution = db_query('SELECT solution FROM {captcha_sessions} WHERE csid = :csid', [
+            ':csid' => $captcha['sid']
+        ])->fetchField();
 
         $validation = $webform['captcha']['#captcha_validate'];
 

@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { FormInputGroup, FormInputTextfield, FormInputEmail, FormInputTextarea, FormCaptcha, CaptchaOptions } from '../form-input';
+import { FormInputGroup, FormInputTextfield, FormInputEmail } from '../form-input';
+import { FormInputTextarea, FormCaptcha, CaptchaOptions } from '../form-input';
+import { FormInputHidden } from '../form-input';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { CaptchaService } from './captcha.service';
@@ -46,7 +48,7 @@ export class DrupalApiService {
     getForm(): Observable<FormInputGroup> {
 
         return this.http
-            .get(this.url)
+            .get(this.url, {params: {req: encodeURIComponent(window.location.href)}})
             .pipe(
                 map(data => this.serialize(data as DrupalSiteFeedbackSuccessInterface | DrupalSiteFeedbackErrorInterface))
             );
@@ -70,8 +72,8 @@ export class DrupalApiService {
             throw new Error(data.message as string);
         }
 
-        let captcha    = 0;
         let total      = Object.values(data.message.components).length;
+        let captcha    = 0;
         let components = [];
 
         for (let idx in data.message.components) {
@@ -92,6 +94,10 @@ export class DrupalApiService {
 
                 if (item.type === 'email') {
                     input = new FormInputEmail(item);
+                }
+
+                if (item.type === 'hidden') {
+                    input = new FormInputHidden(item);
                 }
 
                 if (null !== input) {
