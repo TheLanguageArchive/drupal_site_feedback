@@ -37,7 +37,7 @@ import { SafeHtmlPipe } from './safe-html.pipe';
     MatProgressSpinnerModule,
     MatTooltipModule,
   ],
-  entryComponents: [DrupalSiteFeedbackComponent],
+  // entryComponents: [DrupalSiteFeedbackComponent],
   providers: [DrupalApiService, FormService, CaptchaService],
 })
 export class AppModule {
