@@ -139,7 +139,6 @@ function drupal_site_feedback_menu() {
 function drupal_site_feedback_theme() {
 
     $module_path = drupal_get_path('module', 'drupal_site_feedback');
-    drupal_add_css($module_path . '/css/materialicons.css');
 
     return [
 
@@ -164,6 +163,7 @@ function drupal_site_feedback_permission() {
 function drupal_site_feedback_tag() {
 
     $module_path = drupal_get_path('module', 'drupal_site_feedback');
+    drupal_add_css($module_path . '/css/materialicons.css');
     drupal_add_js($module_path . '/app/dist/elements/drupal-site-feedback.js.gz', ['scope' => 'footer']);
 
     recaptcha_captcha('generate', 'reCAPTCHA');
