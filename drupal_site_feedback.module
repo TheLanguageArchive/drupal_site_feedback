@@ -138,6 +138,9 @@ function drupal_site_feedback_menu() {
 
 function drupal_site_feedback_theme() {
 
+    $module_path = drupal_get_path('module', 'drupal_site_feedback');
+    drupal_add_css($module_path . '/css/materialicons.css');
+
     return [
 
         'drupal_site_feedback_tag' => [
